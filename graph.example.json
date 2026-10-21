@@ -1,0 +1,15 @@
+{
+  "schema": "evidence-paths/v1",
+  "nodes": ["test-client", "app-session", "fixture-order"],
+  "start": "test-client",
+  "goal": "fixture-order",
+  "edges": [
+    {"id": "authenticate", "source": "test-client", "target": "app-session", "observations": [
+      {"source_id": "lab-validator", "origin_id": "owned-session-control", "value": true, "verified": true, "observed_at": "2026-10-21T00:00:00Z", "ttl_days": 7}
+    ]},
+    {"id": "cross-owner-read", "source": "app-session", "target": "fixture-order", "observations": [
+      {"source_id": "scanner", "origin_id": "one-export", "value": true, "verified": false, "observed_at": "2026-10-21T00:00:00Z", "ttl_days": 7},
+      {"source_id": "dashboard-reexport", "origin_id": "one-export", "value": true, "verified": false, "observed_at": "2026-10-21T00:00:00Z", "ttl_days": 7}
+    ]}
+  ]
+}

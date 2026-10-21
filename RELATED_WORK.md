@@ -1,0 +1,27 @@
+# Seed literature and novelty audit
+
+Primary-source lookup performed on 2026-10-21. This is a targeted seed review, not a systematic review or proof that no closer work exists. Paper-level summaries below rely on the accessible primary abstract/front matter and selected sections, not a claim that every paper was fully reproduced. The prototype does not implement these published systems as baselines.
+
+| Work | Relevant established idea | Consequence for this project |
+|---|---|---|
+| Ou, Govindavajhala, Appel, **MulVAL: A Logic-based Network Security Analyzer**, USENIX Security 2005. [Primary paper page](https://www.usenix.org/conference/14th-usenix-security-symposium/mulval-logic-based-network-security-analyzer) | Multi-host attack reasoning using a formal rule model and collected configuration/vulnerability facts | Do not claim logical attack-path analysis or scanner-fact integration is new. Compare prerequisite expressiveness and provenance quality. |
+| Muñoz-González, Sgandurra, Barrère, Lupu, **Exact Inference Techniques for the Analysis of Bayesian Attack Graphs**, arXiv 1510.02427, revised 2016. [Primary preprint](https://arxiv.org/abs/1510.02427) | Efficient probabilistic inference for static/dynamic risk analysis under attack uncertainty | This prototype does not compete on Bayesian probability estimation; distinguish epistemic evidence bounds from modeled attacker probabilities. |
+| Matthews, Mace, Soudjani, van Moorsel, **Cyclic Bayesian Attack Graphs: A Systematic Computational Approach**, 2020. [Primary preprint](https://arxiv.org/abs/2005.06350) | Formal treatment and computation for cyclic Bayesian attack graphs | Handling cycles in BFS is not a research novelty or a substitute for this richer model. |
+| Alsaheel et al., **ATLAS: A Sequence-based Learning Approach for Attack Investigation**, USENIX Security 2021. [Primary paper page](https://www.usenix.org/conference/usenixsecurity21/presentation/alsaheel) | Attack-story reconstruction from audit logs using causality and learned sequence patterns | Provenance-based investigation is established; this project focuses on planned assessment validations, not reconstruction of historical intrusions. |
+| Kim, Dán, Zhu, **Human-in-the-loop Cyber Intrusion Detection Using Active Learning**, author-hosted 2024 manuscript. [Primary manuscript](https://people.kth.se/~gyuri/Pub/KimDZ_Human_in_the_loop_Intrusion_Detection_TIFS2024.pdf) | Human investigation prioritization and sequential detection through active learning in HMMs | Active selection of informative security investigations is already prior art. A pentest-specific setting alone is not enough to establish a new algorithm. |
+| Shrestha et al., **ProvSec: Open Cybersecurity System Provenance Analysis Benchmark Dataset with Labels**, 2023, DOI 10.1007/s44227-023-00014-9. [Publisher paper](https://link.springer.com/article/10.1007/s44227-023-00014-9) | Labeled system-provenance datasets with benign/adversarial scenarios | Benchmark novelty must concern the new task, acquisition validity, and evidence dependencies; simply releasing logs is insufficient. |
+| **AXguard attack-graph documentation**, software documentation, accessed 2026-10-21. [Project primary documentation](https://github.com/Awarexone/AXguard/blob/main/docs/attack-graph.md) | Three-valued preconditions and explicit uncertainty in code-visible reachability | Three-valued graph reasoning is already implemented elsewhere. This is software prior art, not evidence of peer-reviewed validation. |
+
+## Proposed differentiation, still to be established
+
+A benchmark task that measures **assessment conclusion safety and validation cost together** under source re-export, stale evidence, contradictory reports, and imperfect validation, with independently established lab ground truth and a complete evidence lineage ledger. A planner would be valuable only if it improves a meaningful error/coverage/cost frontier against strong alternatives across held-out scenarios.
+
+The current prototype establishes neither benchmark realism nor algorithmic superiority. Its containment guarantee is standard, the graph semantics are simplified, and the validation oracle is idealized. The pilot exists to expose those limits and guide the next study.
+
+## Systematic review protocol to complete before a thesis novelty claim
+
+Search publisher/author sources for: `(penetration testing OR security assessment) AND (active validation OR test selection OR uncertainty OR partial observation)`; `(attack graph OR attack tree) AND (evidence provenance OR stale evidence OR source dependence OR incomplete information)`; and `(security investigation) AND (active learning OR sequential experiment OR value of information)`.
+
+Search IEEE, ACM, USENIX, NDSS, and relevant author repositories; use arXiv for preprints and trace final versions. Record query/date, inclusion criteria, screening decisions, publication status, version, task assumptions, datasets, metrics, cost/error model, available artifacts, and nearest-overlap judgment. Perform backward/forward citation chasing from the closest papers. Resolve duplicate versions. Do not treat ResearchGate hosting or citation counts as a quality or novelty test.
+
+Include measurement/decision-theory and formal-verification work when its assumptions overlap. Reproduce at least the closest feasible baseline or explain precisely why an adaptation is not comparable. Have a prospective supervisor review the matrix before committing to a thesis claim.

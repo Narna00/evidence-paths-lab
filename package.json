@@ -1,0 +1,8 @@
+{
+  "name": "evidence-paths-lab-figures",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Optional rasterization of reproducible research figures",
+  "devDependencies": {"sharp": "0.35.5"},
+  "scripts": {"render-plot": "node render_plot.cjs"}
+}
