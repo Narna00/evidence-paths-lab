@@ -1,41 +1,35 @@
 # Evidence Paths Lab
 
-Research prototype for **evidence-aware validation planning in penetration testing**. It represents uncertain candidate transitions, computes confirmed/possible reachability, and prioritizes the next edge to validate. Includes a reproducible synthetic benchmark, five baselines/methods, raw results, paired bootstrap analysis, and a doctoral research protocol.
+This repository contains an exploratory graph experiment and a revised research plan for testing authorization after permissions change.
 
-This is a working research starting point, not a completed PhD, a peer-reviewed result, or an established novel method. The core graph bounds use familiar ideas. The proposed research contribution concerns dependable assessment evidence, realistic validation cost/error models, and reproducible evaluation under correlated and stale tool observations.
+The research problem is specific: a user loses a role, leaves a tenant, or has access revoked, but an existing session or application component may continue to authorize requests. The proposed study asks how to detect these failures, distinguish a security defect from permitted propagation delay, and preserve a test that reproduces the result.
 
-## Run
+The new study has not been implemented or evaluated. The existing code computes reachability bounds on synthetic graphs. It is retained as an earlier experiment, with its results and limitations intact. It is not an authorization scanner.
 
-Python 3.12+, standard library only:
+## Research documents
+
+- [Research assessment](RESEARCH_ASSESSMENT.md): comparison with university research, published systems and doctoral work; reasons for changing direction.
+- [Study proposal](PROPOSAL.md): problem, research questions, candidate contribution and scope.
+- [Related work](RELATED_WORK.md): primary sources and the closest overlap, including work published in 2026.
+- [Evaluation plan](PROTOCOL.md): baselines, controls, measurements and rules for interpreting results.
+- [Local lab plan](LAB_PROTOCOL.md): the first reproducibility experiment and its acceptance criteria.
+
+## Earlier graph experiment
+
+Python 3.12 or later; standard library only:
 
 ```sh
-python evidence_paths.py graph.example.json --trust-policy trust.example.json --as-of 2026-10-21T12:00:00Z --recommend
-python benchmark.py --seeds 30 --output my-pilot
 python -m unittest discover -v
+python evidence_paths.py graph.example.json --trust-policy trust.example.json --as-of 2026-10-21T12:00:00Z --recommend
+python benchmark.py --seeds 30 --output new-pilot
 ```
 
-The example exits 1 because the cross-owner transition is unvalidated. Two re-exported scanner claims share one origin and do not create proof. The benchmark refuses to overwrite an output directory. Inference exits 0 for a resolved in-model decision, 1 for unknown, and 2 for invalid input. Exit 0 does not mean a system is secure.
+The example returns exit code 1 because the modeled transition remains unresolved. The benchmark refuses to overwrite an existing output directory. [MODEL.md](MODEL.md) defines the graph semantics. [PILOT.md](PILOT.md) reports the synthetic results; `pilot-results.zip` contains the underlying artifacts. The original proposal and protocol are preserved under [archive-2026-10-21.zip](archive-2026-10-21.zip).
 
-For optional figure/report regeneration, extract `pilot-results.zip` into `pilot-results/`, install the optional pinned `requirements-figures.txt`, and run `python report.py`. This regenerates PILOT.md, the SVG, the environment ledger and raw-results archive; it overwrites those generated artifacts. To regenerate the PNG, install the pinned development dependency in `package.json` and run `node render_plot.cjs`. The core benchmark and tests require neither dependency. Keep the original artifact bundle before regenerating, because runtime/environment metadata and resulting archive hashes can change.
+At a validation budget of five, the gain heuristic resolved 75% of synthetic queries; path-first resolved 80%. These pooled descriptive results do not establish superiority of the proposed heuristic. Correct, perfect-cost validation and a complete candidate graph were simulation assumptions. No production system or independent application corpus was tested.
 
-## Research package
+Optional figures can be regenerated with `report.py` after installing `requirements-figures.txt`. That script overwrites generated reports and archives. `render_plot.cjs` uses the optional dependency in `package.json` to render the PNG. Preserve the original results before regeneration.
 
-- [PROPOSAL.md](PROPOSAL.md): research questions, candidate contributions, thesis structure, and milestone gates.
-- [RELATED_WORK.md](RELATED_WORK.md): verified seed bibliography, overlap matrix, and literature-review limits.
-- [PROTOCOL.md](PROTOCOL.md): hypotheses, baselines, metrics, costs, splits, and reproducibility controls.
-- [MODEL.md](MODEL.md): semantics, proof sketch, assumptions, and failure boundaries.
-- [LAB_PROTOCOL.md](LAB_PROTOCOL.md): local virtual lab acquisition and transition-validation plan.
-- [PILOT.md](PILOT.md): measured synthetic pilot results and limitations, generated from raw outputs.
-- `pilot-results.zip`: complete pilot graph fixtures, raw rows, summaries, and hashes.
+## Scope
 
-## Operational interpretation
-
-`reachable` means a path exists using only currently trusted, verified-true transitions. `unreachable_in_model` means no path exists even if all unknown *declared* transitions are possible. `unknown` means current evidence cannot resolve the query. Unknown transitions are never promoted to confirmed by duplicate scanner claims. Time-to-live is explicit and expired/future claims are excluded.
-
-These are graph-model statements. The current directed graph has no conjunction of exploit prerequisites, credential state, temporal action ordering, probability of exploit success, or automatic network discovery. A closed candidate universe and correct trusted validations are essential assumptions. A hostile or incomplete candidate graph can invalidate a real-world safety interpretation. The separate trust policy is an administrator-controlled record, not a signature or proof that validation occurred.
-
-The recommender compares hypothetical perfect true/false resolutions of each relevant unknown edge. Its branch score is a heuristic, not a calibrated probability. Conflicting trusted validators remain unknown and require adjudication. No network operations, exploit execution, or LLM calls occur in the research prototype.
-
-## Local experiments and scope
-
-The user-selected environment is a local virtual lab. The first pilot is fully synthetic and does not claim results for AD, Wi-Fi, or real engagements. See the lab protocol for staged collection with controlled ground truth. A VM-only environment cannot establish RF-layer wireless claims. No human participants, customer evidence, or third-party targets were used.
+Experiments are restricted to locally hosted software and isolated virtual machines using synthetic identities and records. The research is independent of the public Assessment Workbench. No human-participant study, new vulnerability discovery or publication acceptance is reported.

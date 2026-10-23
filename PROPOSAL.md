@@ -1,60 +1,55 @@
-# Doctoral research proposal: evidence-aware validation planning for penetration testing
+# Testing authorization after policy changes
 
-## Working research question
+Research proposal · 23 October 2026
 
-How should a penetration tester choose the next validation action and state a reachability conclusion when assessment evidence is incomplete, stale, correlated, contradictory, or wrong?
+## Problem
 
-The motivating failure is operational: a missing export is treated as absent access, several dashboards repeat one scanner result as independent support, or a historical configuration is mistaken for current enforcement. The intended unit of analysis is a scoped transition and the evidence required to validate it. The first prototype deliberately separates a reported condition from a verified capability.
+Authorization is often tested as a static matrix: a principal requests a resource and the response is checked against the expected permission. In practice, permissions change while sessions, tokens, application caches and background work remain active. A request denied to a fresh session may still succeed through an older session. Conversely, a temporary failure or an expired session can be mistaken for successful enforcement.
 
-This is a candidate research direction that fits a local virtual lab, not a claim of thesis acceptance or publication readiness. ResearchGate presence and search indexing are distribution outcomes; the scientific milestones are a defensible contribution, rigorous evaluation, reproducible artifacts, and review by the relevant research community.
+This study will investigate how to test authorization across such changes. The first scope is multi-user web applications and REST APIs deployed in a local virtual lab. Active Directory, endpoint exploitation and wireless assessment are outside the initial empirical claim.
 
-## Candidate thesis contributions
+An illustrative case has four steps: establish that an authorized user can read a synthetic private record; revoke that permission through the supported administrative operation; repeat the request with the existing session; repeat it with a fresh session and an unaffected control user. The expected result depends on the application’s documented revocation contract. An eventual-consistency delay is not automatically a vulnerability.
 
-1. **Evidence semantics for assessment claims.** A transition evidence model that tracks lineage, validity conditions, contradictions, and proof obligations. Extend the initial directed-graph prototype to AND/OR prerequisites, identity states, and explicit snapshot transitions. Identify the conditions under which conclusions are sound, and when the system must abstain.
-2. **Validation planning under practical constraints.** Choose the next permitted action given cost, disruption budget, validator error, and uncertain outcomes. Compare simple heuristics, risk-sensitive planning, and formal/optimization approaches. Do not presuppose that the supplied heuristic wins.
-3. **A controlled assessment benchmark.** Create locally reproducible scenarios with independent ground truth, known observation corruption, and tool-source lineage. Evaluate over different topologies and configurations with held-out scenario families. Release acquisition/provenance records, not just a final CSV.
-4. **Analyst-facing evaluation.** Test whether evidence-aware explanations improve conclusion quality and test selection compared with conventional reports. A human study is a later phase requiring institutional ethics review, consent, a power analysis, and a study design agreed before recruitment. It is not part of the current pilot.
+## Research questions
 
-None of these contributions is established merely by implementing a tool. The nearest prior work must be reproduced and the differentiating claim narrowed after a systematic search. A negative result about a planning heuristic can still be useful if it establishes a reproducible limitation and a well-supported alternative.
+1. Which permission-transition failures are missed by testing each identity against a single static snapshot?
+2. Can dependency-aware invalidation of earlier observations reduce retesting cost without missing failures after a policy change?
+3. Can a replayable test distinguish authorization failure from session expiry, missing data, infrastructure failure and allowed propagation delay?
 
-## Questions and falsifiable outcomes
+The second question is conditional. A dependency model must first be shown to capture the relevant effects of a policy change. Retesting only a guessed subset may miss exactly the failures the study seeks to find.
 
-| Question | Measurable outcome | Falsification |
+## Proposed method
+
+Represent a test as a sequence over principal, session, resource, policy version and observed application state. Each security conclusion records the conditions under which it was obtained. A permission change invalidates affected conclusions; a scheduler selects the next control or probe needed to re-establish them. The method produces the sequence, expected policy, observed effect and replay instructions for review.
+
+The result categories are confirmed violation, behavior consistent with the tested policy, and inconclusive. A successful response alone is insufficient to prove disclosure: a synthetic resource marker must demonstrate access to the protected object. A denied response alone is insufficient to prove enforcement: authentication validity and an authorized positive control must succeed. For writes, verify the actual state change through an independent permitted read or database fixture check.
+
+The proposed contribution is the treatment of policy transitions and invalidated evidence in test generation and retest selection. Stateful requests, role switching, authorization matrices, provenance hashes and generated regression tests are established techniques. Novelty is unresolved until the closest systems have been examined and reproduced.
+
+## Relation to existing work
+
+RESTler supplies a strong reference for dependency-aware request sequences. EvoMaster’s 2026 access-policy work is a direct baseline for security oracles and generated tests. BolaZ is relevant to resource-ID flow and authorization boundaries. Enemy of the State and Black Widow establish substantial prior work on state-aware web exploration. The proposed study must identify a failure class these methods miss under a fair configuration, rather than compare only with a weak status-code checker. Sources and limits appear in [RELATED_WORK.md](RELATED_WORK.md).
+
+## Experimental scope
+
+Begin with explicit revocation, role downgrade, tenant removal and resource ownership transfer. Compare existing and fresh sessions, immediate and delayed checks, and direct and cached access paths. Begin with fixed, deterministic application contracts before adding distributed components or timing uncertainty.
+
+Use deliberately seeded cases to test the apparatus and historical open-source defects to assess realism. Keep the two groups separate. Each historical case requires pinned source, its patch, a working pre-patch demonstration and a post-patch control. A training application is useful for development but does not establish generality.
+
+All execution occurs in isolated local VMs with synthetic records. Application families, not individual requests, define the evaluation split. Measure whether the workstation can support each deployment before specifying corpus size. No customer environment, external scanning or human-subject experiment is needed for the first study.
+
+## Expected outputs and decision gates
+
+| Stage | Output | Decision |
 |---|---|---|
-| RQ1: Do evidence bounds prevent unsafe conclusions under specified observation errors? | False-safe and false-confirmed rates with coverage, condition violations, and exact guarantees | A claim of soundness outside its assumptions, or errors when trusted evidence is correct |
-| RQ2: Does targeted validation resolve queries with fewer actions than strong simple baselines? | Paired loss/coverage curves at fixed cost and time budgets | No improvement over path-first or random validation across held-out families |
-| RQ3: How do source dependence, staleness, and validator error affect decisions? | Factorial corruption experiments and failure boundaries | Benefits vanish under plausible dependence/error assumptions |
-| RQ4: Does the explanation help a professional reviewer? | Blinded conclusion accuracy, validation choices, time, and uncertainty reporting | No improvement, worse calibration, or gains explained by extra information rather than the method |
+| Prior-work reproduction | Versioned comparison matrix and executable baseline run | Continue only if a specific unsupported task or measurement gap remains |
+| Corpus feasibility | A small set of reproducible policy-transition cases with independently specified expectations | Continue only if failures and controls replay reliably |
+| Method development | State/evidence model and prototype scheduler | Test on development families; record all changes |
+| Evaluation | Held-out comparisons, costs, errors, inconclusive outcomes and ablations | Retain negative results and explain exclusions |
+| External review | Research report and reproducibility package | Choose a submission venue only after the contribution is supported |
 
-## Scope of the current artifact
+A credible negative outcome is that full retesting is sufficiently cheap, dependency inference is unreliable, or an existing fuzzer already detects the same failures. In that case, report the measurement result and stop presenting the scheduler as an advance.
 
-Implemented now: finite directed-graph inference, explicit trusted validation, time validity, contradiction-preserving uncertainty, shortest path witnesses, three validation policies, two observation-only baselines, four synthetic topology families, reproducible seeds, paired bootstrap summaries, raw datasets, a local web fixture in the companion workbench, and regression tests.
+## Current status
 
-Not implemented: general attack-graph generation, AD exploit execution, RF experiments, cryptographic source authentication, Bayesian inference, a real-world cost model, noisy validator simulation, temporal attacker state, an AND/OR solver, a human study, or a systematic literature review. These are research tasks, not hidden capabilities.
-
-## Local-lab resource model
-
-Begin with the included loopback fixture and small graph experiments on the current workstation. Add a Windows evaluation DC/member environment only if legitimate images and sufficient memory/storage are available. Use snapshots and an isolated virtual network; do not bridge the lab to production. Establish the feasible VM count by measurement before buying hardware. Wireless conclusions remain outside the empirical claim until owned radio hardware and appropriate RF isolation exist.
-
-Ground truth should come from a configuration ledger plus an independent controlled validation, not from the same scanner used as input. Archive image identifiers, software versions, configuration changes, acquisition scripts, and timestamps. The budget model must distinguish an offline configuration query, an authenticated check, and a disruptive exploit; a unit-cost oracle cannot justify field claims.
-
-## Milestones and decision gates
-
-| Phase | Work | Exit gate |
-|---|---|---|
-| Weeks 1–2 | Seed literature matrix, reproduce simple bounds and baselines, document threat model | A supervisor can identify the precise difference from the closest work |
-| Weeks 3–6 | Expand controlled web scenarios and evidence acquisition; independent ground truth | Every edge label is reproducible with raw artifacts and declared conditions |
-| Weeks 7–10 | Add cost/error models and preregister confirmatory comparisons | Protocol frozen before held-out evaluation |
-| Weeks 11–14 | Execute held-out experiments, investigate failures, run ablations | Results reproduce from a clean environment and include negative outcomes |
-| Weeks 15–18 | Draft an artifact/benchmark paper or workshop submission if contribution is supported | External technical review finds the claim defensible |
-| Months 6–18 | Extend model to identity prerequisites and temporal/AND-OR semantics | New theorem/algorithm/measurement contribution and strong comparisons |
-| Months 18–30 | Validate across lab domains and realistic error/cost regimes | Generalization beyond the initial synthetic setting |
-| Months 24–42 | Approved analyst study if useful; consolidate publications and dissertation | Institution-specific milestones and supervisory review |
-
-These are planning estimates, not a schedule of unattended agent work or an institutional degree timeline. A PhD normally depends on admission, supervision, coursework/exams where applicable, research progress, and a defended dissertation; confirm the exact requirements with the intended program.
-
-## Publication and integrity strategy
-
-Prepare an initial research statement, a reproducible artifact, a related-work comparison, and a clearly limited pilot. Seek feedback on the research problem before choosing a venue. Preserve raw results and failed hypotheses, record all protocol changes, and distinguish exploratory analysis from confirmatory tests. Do not add fictitious publications, affiliations, datasets, reviews, or acceptance claims. Authorship, assistance disclosure, and data policies must follow the eventual institution and venue requirements.
-
-Potential paper sequence, contingent on actual results: evidence-quality benchmark; cost/error-aware validation planning; multi-domain validation and analyst study. The intended audience is security measurement, systems security, and security assessment research. Venue fit and current submission rules must be checked when a real manuscript exists.
+This is a proposal. No policy-transition corpus, application adapter or new scheduler has been implemented. Existing graph code remains available as an earlier exploratory experiment. Its synthetic results do not answer the research questions above.

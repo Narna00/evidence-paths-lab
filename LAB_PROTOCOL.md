@@ -1,37 +1,28 @@
-# Local virtual lab protocol
+# Local lab: first authorization-transition experiment
 
-## Stage A: deterministic software fixture
+This plan is independent of the public pentesting reference site. It requires local VMs and synthetic accounts only. No lab deployment or experiment described here has yet been completed.
 
-Use the companion [Assessment Workbench](https://github.com/Narna00/assessment-workbench) `lab_web.py`. Its pure `handle` function and loopback HTTP mode provide paired flawed/fixed behavior for object authorization, SQL boolean interpretation, and reflected markup. These are deliberately simplified fixtures, not a representative web-app population.
+## First milestone
 
-For each snapshot, record source commit/hash, secure-mode flag, route, test principal, fixture object ownership, baseline response, probe response, expected result, and independent owner/reviewer label. A scanner claim and a reviewer looking at the same scanner output are not independent ground truth. Establish ownership and implementation state separately.
+Establish one reproducible permission-revocation sequence on a small local application. Run it against a secure implementation and a deliberately flawed implementation that retains an authorization decision after revocation. This validates the apparatus; it is not evidence of a new vulnerability or a publishable contribution.
 
-Example transition: `app-session -> foreign-order-readable`. Preconditions: a valid low-privilege lab-b session, object 1001 owned by lab-a, a known route/method, and a fixed snapshot. Control: lab-a can read its own object. Probe: lab-b requests that object. In the flawed fixture the foreign read succeeds; in the fixed fixture it is denied. A denial caused by an invalid token is not evidence of correct object authorization.
+Use an isolated application VM with a host-only or internal network. Record the OS image, application commit, dependency versions, network configuration and reset procedure. Check available memory/storage before adding a database, identity service or separate cache VM. Use an application-specific loopback binding when a single VM is sufficient.
 
-Record both positive and negative controls, plus a sensor-failure scenario in which the observation is deliberately omitted. Map omission to UNKNOWN. If you duplicate the same response into three reports, retain one origin lineage. If a snapshot changes, expire the prior transition validation and collect again.
+## Sequence
 
-## Stage B: isolated web scenario families
+1. Reset to the declared initial state. Create two synthetic users, two tenants and one private record containing a unique canary marker.
+2. Grant user A access. Confirm the record through A’s existing session and an independent administrator control. Confirm user B is denied while B’s own authorized operation still succeeds.
+3. Revoke A’s permission using the supported administrative operation. Record when the change is accepted and when the policy contract requires enforcement.
+4. Read the record with A’s old session and then with a fresh session at declared time intervals. Verify the protected marker, not only the status code.
+5. Repeat an unaffected authorized request to distinguish enforcement from an unavailable service. Where permitted by the lab fixture, inspect the authoritative permission record independently.
+6. Reset and repeat against the paired implementation. Confirm that the reset removed prior sessions, cache state and test records.
 
-Build multiple application implementations or use legally available, locally hosted training targets with version-pinned images. Separate application family, authorization design, database adapter, and reverse-proxy configuration across splits. Random object IDs within one implementation are not independent scenario families.
+Each record should include `application_commit`, `scenario_id`, `policy_contract`, `policy_version`, `principal_id`, `session_generation`, `resource_id`, `change_operation`, `change_accepted_at`, `enforcement_deadline`, `request_started_at`, `response_status`, `observed_effect`, `control_outcome`, `artifact_hashes` and `reset_id`. Use monotonic elapsed time for windows and UTC for the event ledger. Store only synthetic credentials.
 
-Use synthetic users, tenants, records, and canary services only. Keep network adapters host-only/internal and block unapproved egress. No internet callback or production metadata service is needed. Capture tool runtime and operator validation time separately. Store redacted summaries with restricted originals and integrity manifests.
+## Acceptance
 
-## Stage C: identity/endpoint scenarios
+The sequence must detect the planted stale-authorization fault, accept the secure control and return inconclusive when the service or positive control is unavailable. A fresh session that fails authentication must never count as proof that resource authorization works. An allowed consistency delay must not be labeled a defect.
 
-If workstation resources permit, add a legitimately licensed evaluation directory controller and member VM. Start with membership, delegation configuration, service ACLs, and explicit negative controls. Snapshot both machines together, track domain/host identity and clock state, and document any action requiring state changes. A lab configuration ledger determines ground truth, while approved authenticated queries provide fallible observations.
+After this milestone, reproduce the applicable EvoMaster and RESTler baselines on the same fixture. Record manual configuration and unsupported features. Then identify historical open-source authorization fixes that can be rebuilt and checked locally. Reject cases without a clear policy expectation or reliable pre/post reproduction; retain exclusion reasons.
 
-Do not assume a directory attribute makes an exploit feasible. Introduce each additional prerequisite explicitly before moving to an AND/OR or stateful model. Keep the current simple reachability results separate from richer model experiments.
-
-## Wireless boundary
-
-With local VMs only, evaluate offline capture parsing, BSSID inventory, source lineage, and incomplete observation handling. EAP/PMF negotiation, roaming, management-frame behavior, and RF interference require owned hardware and appropriate isolation. No RF-layer result is claimed by this project or its synthetic pilot.
-
-## Evidence ledger fields
-
-`scenario_id`, `family_id`, `snapshot_id`, `source_commit`, `image_digest`, `configuration_change`, `test_case_id`, `transition_id`, `principal`, `target_fixture`, `vantage_point`, `start_utc`, `end_utc`, `tool_version`, `input_artifact_hash`, `output_artifact_hash`, `origin_id`, `ground_truth_method`, `reviewer`, `validation_cost`, `collection_error`, `rollback_verified`.
-
-An adapter must not convert `secure_observed` into a universally false edge. It can validate only the exact transition under the recorded preconditions and snapshot. Out-of-scope implications remain unknown. Hashing supports integrity but does not authenticate a claimed reviewer or observation time.
-
-## Acquisition acceptance criteria
-
-Every released scenario must recreate from pinned sources; every Boolean transition must have independent ground-truth justification; every corruption operation must be logged; every parser/import transformation must be versioned; every excluded scenario must retain its exclusion reason. A second person should reproduce a sample before any field-generalization claim.
+The existing `lab_web.py` in the separate workbench is a static object-authorization teaching fixture. It does not implement policy revocation, session generations or cache consistency and cannot validate this study without new implementation.
