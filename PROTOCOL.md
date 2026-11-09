@@ -1,39 +1,45 @@
-# Evaluation plan: authorization after policy changes
+# Authorization-transition evaluation protocol
 
-Draft protocol, 23 October 2026. No experiments under this protocol have been run. Freeze versions, corpus, hypotheses and analysis before held-out evaluation. The earlier graph pilot is documented in `archive-2026-10-21.zip`.
+## Study design
 
-## Unit and ground truth
+The planned evaluation uses paired comparisons on application deployments with defined permission transitions. Versions, corpus membership, hypotheses, primary outcomes and analysis will be fixed before held-out evaluation. Development runs will be recorded separately.
 
-The experimental unit is an application deployment with a defined permission transition. Requests, repeated exports and multiple observations of one defect are not independent samples. Cluster analysis by application family and report the number of distinct root causes.
+The experimental unit is an application deployment and permission transition. Repeated requests, exports and observations of one defect are nested measurements. Analysis will account for clustering by application family and identify distinct root causes.
 
-Ground truth requires an explicit policy contract, a known configuration and independently checked effects. Historical defects additionally require a documented patch and reproducible pre/post behavior. For seeded defects, keep the mutation record separate from the tool input. Mark ambiguous contracts unresolved rather than assigning the expected outcome from the scanner response.
+## Ground truth
 
-## Comparisons
+Each scenario requires an explicit policy contract, a known configuration and independently checked effects. Historical defects additionally require a documented patch and reproducible pre/post behavior. Seeded faults require a mutation record held separately from tool inputs. Ambiguous policy contracts receive an unresolved label.
+
+## Baselines
 
 | Baseline | Purpose |
 |---|---|
-| Static role/resource matrix | Measures what a conventional snapshot check misses |
-| Full replay after each change | Strong completeness reference within the declared test inventory |
-| Dependency-aware sequence generator, initially RESTler where compatible | Controls for benefits already supplied by stateful request generation |
-| EvoMaster access-policy checks | Direct comparator for security oracles and generated regression tests |
-| Random selection at an equal measured budget | Measures benefit beyond a selection policy without domain information |
+| Static role/resource matrix | Snapshot-based detection |
+| Complete replay after each change | Reference coverage within the test inventory |
+| RESTler, for compatible APIs | Dependency-aware request generation |
+| EvoMaster access-policy checks | Established security oracles and generated tests |
+| Random selection at equal measured cost | Selection without dependency information |
 
-Record exact versions, authentication setup, adapters, configuration effort and supported tasks. Report incompatible cases separately; unsupported input is not a detected vulnerability or an algorithm failure. No baseline is considered reproduced until a known positive and negative control succeed.
+Baseline configuration records will include software version, authentication, adapters, supported tasks and setup effort. Positive and negative controls will establish that each configuration operates as intended. Incompatible cases will be reported separately.
 
-## Outcomes
+## Outcome measures
 
-Primary outcomes are missed violations after a permission transition, false findings on secure controls, and total cost to reach a correct result. Report inconclusive cases and denominators. Measure HTTP requests, reset time, wall time, CPU/memory where relevant, and operator setup/triage time separately. Coverage is a secondary measure, not proof of security.
+Primary outcomes are missed policy violations, false findings on secure controls and cost to reach a correct result. Inconclusive outcomes will be reported with their reasons and denominators. HTTP request counts, reset overhead, wall time, computational resources and operator setup/triage time will be measured separately.
 
-For revocation, define the allowed enforcement delay before testing. Sample at declared intervals and report the last successful forbidden effect and the first confirmed denial. The interval bounds the observed window; it is not an exact timestamp. Repeat with old and fresh sessions and verify an unaffected authorized control. Distinguish session revocation from resource permission revocation and token expiry.
+For revocation, the enforcement deadline follows the application contract. Requests will be sampled at declared intervals. The last successful forbidden effect and first confirmed denial bound the observed enforcement window. Existing-session, fresh-session and unaffected-user controls distinguish resource revocation from session revocation, token expiry and service failure.
 
-## Development and held-out evaluation
+## Data partition and analysis
 
-Use small seeded applications to debug the harness. Hold out complete application families and policy implementations. Reusing a framework with different object IDs does not create an independent family. Deduplicate historical issues by root cause and patch lineage. Choose sample size after measuring feasibility and expected precision, before confirmatory evaluation.
+Development scenarios will use seeded applications. Held-out evaluation will separate complete application families and policy implementations. Historical cases will be deduplicated by root cause and patch lineage. Sample size will be set from reproduction feasibility and a precision analysis before confirmatory evaluation.
 
-Use paired comparisons on identical deployments and reset conditions. Report distributions and per-family effects, including negative results. Cluster bootstrap intervals by application family if the corpus supports that analysis. Do not treat every request as an independent trial or choose statistical tests after seeing favorable outcomes. Correct for the declared family of confirmatory comparisons.
+Paired comparisons will use identical deployment and reset conditions. Results will include per-family distributions and clustered uncertainty estimates where the corpus supports them. The analysis plan will specify the primary comparisons and multiplicity correction. Coverage will be reported alongside decision errors and cost.
 
-## Ablations and failure tests
+## Ablations
 
-Remove change tracking, session tracking and dependency-based invalidation separately. Vary delayed enforcement, missed policy-change events, stale observations, cache reset and unavailable positive controls. Test whether conclusions survive application restart and a clean VM restore. Charge replay/reset overhead to the tested method. If invalidation misses a relevant dependency, record the resulting missed violation rather than repairing the graph silently.
+Change tracking, session tracking and dependency-based invalidation will be removed separately. Further conditions will vary enforcement delay, missed change events, stale observations, cache reset and unavailable positive controls. Application restart and VM restoration will test replay stability. Each method’s measured cost will include its reset and replay overhead.
 
-Release pinned manifests, reset steps, policy contracts, redacted request/response artifacts, exact invocations, expected effects, exclusions and analysis scripts. Preserve original results. A second operator should reproduce a sample before a claim of portability.
+Dependency omissions will be recorded as detection failures where they cause a missed violation. Exclusion records will identify deployment failures, unsupported operations, ambiguous contracts and unstable reproductions.
+
+## Reproducibility package
+
+The release will include pinned manifests, reset procedures, policy contracts, sanitized request/response artifacts, exact invocations, expected effects, exclusions and analysis scripts. Independent replay will assess reproducibility on a sample of deployments.

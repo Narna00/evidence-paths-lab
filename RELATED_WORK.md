@@ -1,41 +1,35 @@
-# Related work and university research comparison
+# Related work
 
-Targeted review, 23 October 2026. This is a source-based scoping review, not a systematic literature review. Reading depth is stated below. No external system has yet been reproduced in this project. Publication dates refer to the work, not search-engine crawl dates.
+This targeted review covers stateful security testing, authorization analysis and reproducible evaluation. It draws on primary publication records, accessible abstracts, artifact documentation and selected paper sections. It is a scoping review; full-system reproduction and systematic screening are separate parts of the research method.
 
-## University and doctoral work
+## Stateful web and API testing
 
-| Source | Evidence examined | Relevance |
-|---|---|---|
-| [Adam Doupé, ASU faculty research page](https://adamdoupe.com/) and [publication list](https://adamdoupe.com/publications/) | Current research description and publication metadata | Automated vulnerability analysis and web security; identifies the papers below |
-| [Doupé, Advanced Automated Web Application Vulnerability Analysis, UCSB dissertation, 2014](https://escholarship.org/uc/item/63d660tp) | University repository abstract | A doctoral programme of related advances in web security; a model for connected contributions rather than a broad toolkit |
-| [Meng Xu, University of Waterloo research](https://cs.uwaterloo.ca/~m285xu/research/) and [publications](https://cs.uwaterloo.ca/~m285xu/publications/) | University-hosted project descriptions and publication metadata | Program analysis, fuzzing and verification; emphasizes specific technical mechanisms and practical systems |
-| [Concordia: Mourad Debbabi](https://www.concordia.ca/faculty/mourad-debbabi.html) and [Computer Security Laboratory](https://www.concordia.ca/ginacody/cybersecurity-intelligent-systems-eng/research/labs/computer-security-laboratory.html) | Official research-area and project descriptions | Canadian context in vulnerability research, software security and quantitative vulnerability models; not an evaluated paper |
-| [Ghanem, Towards an efficient automation of network penetration testing using model-based reinforcement learning, City doctoral thesis, 2022](https://openaccess.city.ac.uk/id/eprint/29885/) | Repository abstract and thesis metadata | Sequential planning, partial observation and hierarchical decomposition already belong to doctoral penetration-testing research; thesis results were not independently verified here |
+[Doupé et al., Enemy of the State, USENIX Security 2012](https://www.usenix.org/conference/usenixsecurity12/technical-sessions/presentation/doupe) infers web-application state to guide black-box vulnerability testing. [Doupé’s 2014 dissertation](https://escholarship.org/uc/item/63d660tp) develops related research on automated web vulnerability analysis. These works establish application state as a central concern in security testing.
 
-The institutional sources were used to establish research context. No contact, endorsement, acceptance or availability of supervision is implied.
+[Black Widow, IEEE S&P 2021](https://publications.cispa.saarland/3224/1/blackwidow_sp2021.pdf) combines navigation modeling with inter-state dependencies. [Witcher, IEEE S&P 2023](https://sites.cs.ucsb.edu/~vigna/publications/2023_SP_Witcher.pdf) applies coverage-guided fuzzing and fault escalation to injection discovery; its [artifact](https://github.com/sefcom/Witcher) documents the implementation. These approaches concern exploration and vulnerability detection across application behavior.
 
-## Systems, methods and evaluation standards
+[Atlidakis et al., RESTler, ICSE 2019](https://www.microsoft.com/en-us/research/wp-content/uploads/2021/03/RESTler.pdf) generates request sequences from API dependencies and execution feedback. Its [implementation](https://github.com/microsoft/restler-fuzzer) provides a practical comparison for stateful API exploration. The authorization-transition evaluation will examine the relevant checkers, supported operations and authentication configuration.
 
-| Work and primary source | Established contribution | Consequence for this study | Reading depth |
-|---|---|---|---|
-| [Doupé et al., Enemy of the State, USENIX Security 2012](https://www.usenix.org/conference/usenixsecurity12/technical-sessions/presentation/doupe) | Infers application state to guide black-box testing | State-aware web scanning cannot be claimed as new | Primary abstract |
-| [Black Widow, IEEE S&P 2021](https://publications.cispa.saarland/3224/1/blackwidow_sp2021.pdf) | Navigation modeling and inter-state dependencies for web scanning | Compare state and dependency coverage, not merely endpoint counts | Accessible paper introduction and contribution summary |
-| [Trickel et al., Witcher, IEEE S&P 2023](https://sites.cs.ucsb.edu/~vigna/publications/2023_SP_Witcher.pdf) and [artifact](https://github.com/sefcom/Witcher) | Coverage-guided web fuzzing and fault escalation for injection discovery | A catalogue of injection strings is not a comparable research contribution | Artifact description and selected paper sections |
-| [Atlidakis et al., RESTler, ICSE 2019](https://www.microsoft.com/en-us/research/wp-content/uploads/2021/03/RESTler.pdf) and [artifact](https://github.com/microsoft/restler-fuzzer) | Generates dependent request sequences using API specifications and feedback | Required baseline for stateful API exploration; compare the applicable security checkers | Paper examples/limitations and project documentation |
-| [Deng et al., PentestGPT, USENIX Security 2024](https://www.usenix.org/conference/usenixsecurity24/presentation/deng) | Pentesting benchmark and a framework addressing context loss | General agent orchestration is already established; not the proposed novelty | Primary abstract and artifact-appendix excerpts |
-| [Mei et al., ARVO, EuroS&P 2026](https://adamdoupe.com/publications/arvo-eurosp2026.pdf) | Reproducible historical vulnerability environments and patch checking | Adopt rebuild/trigger/fix controls; its memory-safety task differs from authorization testing | Abstract, introduction and capability description |
-| [Dong et al., Ta’veren, NDSS 2026](https://adamdoupe.com/publications/taveren-ndss2026.pdf) | Extracts PLC state machines and checks safety policies | Illustrates the difference between supplying a graph and recovering security-relevant behavior | Abstract, introduction and evaluation overview |
-| [Liu et al., DRIFT, ASE 2025](https://cs.uwaterloo.ca/~m285xu/assets/publication/drift-paper.pdf) | On-device firmware tracing and testing through the Debug Monitor | Observability and overhead must be measured; physical firmware requirements exceed a VM-only lab | Abstract and introduction |
-| [Wang et al., CyberGym, Berkeley RDI report, October 2025](https://rdi.berkeley.edu/blog/cybergym/) | Execution-checked vulnerability reproduction on production open-source software | Evaluate demonstrated effects and patch controls; a university report is not itself a peer-review claim | University report, task construction and quality controls |
+## Authorization analysis
 
-## Closest overlap requiring reproduction
+[Sahin, Zhang and Arcuri, Enhancing REST API Fuzzing with Access Policy Violation Checks and Injection Attacks](https://arxiv.org/abs/2604.00702), submitted April 2026, describes access-policy oracles integrated into EvoMaster and executable generated tests. The primary record links to [Journal of Systems and Software DOI 10.1016/j.jss.2026.113060](https://doi.org/10.1016/j.jss.2026.113060). This is a direct comparison for multi-user API checks and regression-test generation. The present review covers the accessible abstract and publisher-indexed sections; full oracle and artifact analysis will establish the supported transition conditions.
 
-[Sahin, Zhang and Arcuri, Enhancing REST API Fuzzing with Access Policy Violation Checks and Injection Attacks](https://arxiv.org/abs/2604.00702), submitted April 2026, links to [Journal of Systems and Software DOI 10.1016/j.jss.2026.113060](https://doi.org/10.1016/j.jss.2026.113060). The accessible abstract and publisher-indexed sections describe access-policy oracles integrated into EvoMaster and executable generated tests. This directly overlaps with a generic proposal for multi-user API security tests. Full oracle behavior, supported state changes and evaluation must be checked before a distinction is claimed. The publisher page could not be fetched directly in this session; indexed sections and the primary arXiv record were available.
+[Wu et al., Rethinking Broken Object Level Authorization Attacks Under Zero Trust Principle](https://doi.org/10.1145/3833417), ACM TOSEM, accepted July 2026, presents BolaZ. The accessible publisher abstract describes resource-ID dataflow and authorization boundaries. This is relevant to ownership transitions and resource dependencies. Assessment of its treatment of policy changes requires the complete method and artifact.
 
-[Wu et al., Rethinking Broken Object Level Authorization Attacks Under Zero Trust Principle](https://doi.org/10.1145/3833417), ACM TOSEM, accepted July 2026, presents BolaZ. The publisher-indexed abstract describes resource-ID dataflow and authorization boundaries. This overlaps with ownership and resource dependency reasoning. Only the indexed primary abstract and metadata were examined; the full publisher page was inaccessible. A claim that policy-transition testing lies outside its scope would be premature.
+The study’s comparison concerns how changes in policy, session generation and cached state affect evidence validity and retest selection. Stateful requests, role switching, authorization checks and generated regression tests are established components of this area.
 
-## Remaining review
+## Planning under partial observation
 
-Search ACM, IEEE, USENIX, NDSS and author repositories for combinations of authorization testing, revocation, role change, session invalidation, cache consistency, stateful API fuzzing and regression test selection. Follow citations from the two closest works and distinguish versions of the same paper. Record inclusion/exclusion reasons, artifacts, supported contracts, experimental unit and reproduction outcome.
+[Ghanem’s 2022 doctoral thesis](https://openaccess.city.ac.uk/id/eprint/29885/) studies model-based reinforcement learning and hierarchical planning for network penetration testing. The repository abstract identifies sequential decision-making and partial observation as central problems. These problems also motivate validation selection, although network planning and application-policy transitions have different state and action models.
 
-The next decision depends on reproducing these methods, not accumulating more citations. If permission-transition failures are already detected adequately, study the cost and reliability of their use or select a different problem. The present search does not establish absence of prior work.
+[Deng et al., PentestGPT, USENIX Security 2024](https://www.usenix.org/conference/usenixsecurity24/presentation/deng) evaluates a penetration-testing framework designed to address context loss. Its benchmark and artifact provide related examples of task definition and evaluation for testing assistance.
+
+## Reproducible security evaluation
+
+[Mei et al., ARVO, EuroS&P 2026](https://adamdoupe.com/publications/arvo-eurosp2026.pdf) provides reproducible historical vulnerability environments and patch checking. [CyberGym, Berkeley RDI report, October 2025](https://rdi.berkeley.edu/blog/cybergym/) describes execution-based vulnerability reproduction on open-source software. Both inform the use of pinned environments, triggering inputs and post-patch controls. Their vulnerability tasks differ from authorization-policy transitions.
+
+[Dong et al., Ta’veren, NDSS 2026](https://adamdoupe.com/publications/taveren-ndss2026.pdf) recovers PLC state machines for policy checking. [Liu et al., DRIFT, ASE 2025](https://cs.uwaterloo.ca/~m285xu/assets/publication/drift-paper.pdf) studies on-device firmware tracing and testing overhead. These systems provide methodological context for state recovery and observability; neither is an application-authorization baseline.
+
+## Review method
+
+The extended review will search ACM, IEEE, USENIX, NDSS and author repositories for authorization testing, revocation, role changes, session invalidation, cache consistency, stateful API fuzzing and regression-test selection. Screening records will distinguish publication versions and record inclusion decisions, supported contracts, datasets, metrics and artifact availability. Citation tracing and baseline reproduction will support the final comparison.

@@ -1,7 +1,13 @@
 # Contributing
 
-Use synthetic evidence and explicit model assumptions. Include a minimal reproducer and a regression test for changed decision semantics. Preserve negative results and record protocol changes. Do not submit client artifacts, credentials, real target inventories, or unlicensed standards text.
+Contributions should include a clear research or engineering objective, the affected model assumptions and a reproducible example. Changes to decision semantics require a regression test. Experimental contributions should record software versions, configurations, seeds, exclusions and protocol deviations, including negative and inconclusive outcomes.
 
-Run `python -m unittest discover -v` on Python 3.12 or later. The assessment workbench also includes `node test_portal.cjs` for dependency-free rendering/filter unit tests. It is not a visual browser test.
+Run the test suite with Python 3.12 or later:
 
-Research contributions should identify the closest prior work and separate exploratory tuning from held-out evaluation. Do not claim novelty or efficacy from a tool name or a single synthetic experiment. Security reports follow SECURITY.md.
+```sh
+python -m unittest discover -v
+```
+
+Documentation changes should use research terminology consistently, cite primary sources and distinguish measured results from proposed methods. Mathematical statements should identify their assumptions; empirical comparisons should identify their experimental unit and applicable baselines.
+
+Examples and submitted artifacts must use synthetic or appropriately licensed data. Client records, credentials, private target inventories and personal data are unsuitable for public issues or pull requests. Security reports follow [SECURITY.md](SECURITY.md).

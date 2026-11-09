@@ -1,43 +1,37 @@
-# Assessment of the research direction
+# Problem formulation
 
-23 October 2026
+## Authorization across state changes
 
-## Conclusion
+A permission check concerns a principal, an action and a resource under a particular policy and application state. When any of these conditions changes, a previously observed result may no longer describe the application’s behavior.
 
-The existing graph prototype does not establish a doctoral contribution in penetration testing. It implements useful distinctions between confirmed, possible and unresolved reachability, but the central reasoning ideas are established, the input graphs are synthetic, and the validation oracle is perfect. Its experimental result also fails to support the proposed planner over the stronger path-first baseline.
+Consider a user who can read a private record through an existing session. An administrator removes the user’s tenant membership. The application may consult an updated database for a fresh session while an older session continues to use cached membership. A static matrix collected before the change cannot determine whether revocation is enforced afterward.
 
-The recommended replacement is a focused study of authorization testing after permission changes. The research would examine executable request sequences, application state and actual enforcement. Its value must be established by reproducing existing methods and measuring a gap they do not already address.
+The expected outcome depends on the policy contract. Some systems require immediate revocation; others specify a bounded propagation interval. The relevant failure is a protected effect outside that contract. Authentication failure, a missing resource and service unavailability are separate outcomes.
 
-## Comparison with research groups and published work
+## Test state
 
-| Research setting | Work examined | What it demonstrates | Gap in the existing project |
-|---|---|---|---|
-| Arizona State University and collaborators | ARVO, EuroS&P 2026 | A method and dataset for rebuilding, triggering and checking historical software vulnerabilities across versions | No independently reproduced software vulnerabilities or comparable acquisition pipeline |
-| ASU and New Mexico State University | Ta’veren, NDSS 2026 | Recovery and policy checking of state machines from PLC binaries | The prototype accepts a supplied graph; it does not recover application semantics or identify implementation defects |
-| UC Santa Barbara | Doupé’s 2014 dissertation and Enemy of the State, USENIX Security 2012 | Research on web vulnerability analysis, including state inference and testing | No executable web exploration, state inference or comparison with a working scanner |
-| University of Waterloo and Northeastern University | DRIFT, ASE 2025 | A concrete firmware testing technique addressing observability and execution overhead | The current cost model counts idealized validations rather than measuring acquisition and execution |
-| UC Berkeley | CyberGym, university research report, October 2025 | Execution-based evaluation on real open-source vulnerabilities | Synthetic graph outcomes cannot establish vulnerability discovery or reproduction capability |
-| City, University of London | Ghanem’s 2022 doctoral thesis on model-based reinforcement learning for network penetration testing | A sustained investigation of sequential planning and scalability in a defined testing model | A small graph heuristic and brief proposal do not supply equivalent depth or establish a new planning method |
-| Concordia University | Official faculty and laboratory research descriptions | Ongoing interests in vulnerability research, software security and quantitative network vulnerability models | Relevant departmental context, but a lab description alone is not evidence of an algorithm, result or available supervision |
+Represent an observation by the tuple `(principal, session, resource, action, policy_version, application_state, time)`. Its evidence record includes the request, observed effect, control outcomes and deployment identity. A policy transition can affect several observations through shared dependencies such as group membership, resource ownership or an authorization cache.
 
-Primary links, reading limits and publication status are recorded in [RELATED_WORK.md](RELATED_WORK.md). These comparisons concern contribution and evaluation, not prestige or repository size. The university pages do not imply endorsement or a supervisory relationship.
+Two questions follow. Which observations lose validity after a transition? Which checks provide enough information to establish the new behavior at the lowest practical cost? A dependency model connects the first question to selective revalidation. Missing dependencies create a risk of omitted tests; overly broad dependencies approach the cost of complete replay.
 
-## What should be retained
+## Observation and conclusion
 
-Retain the graph implementation, tests, raw pilot and negative result as an exploratory record. Evidence lineage, explicit preconditions and a refusal to convert missing observations into proof are sound engineering choices. They can inform the new study’s evidence format without becoming its novelty claim.
+The study distinguishes three outcomes:
 
-The old pilot’s zero decision errors under trusted perfect validation are consequences of its assumptions. They are not evidence that the method will avoid mistakes in a practical assessment. Likewise, adding an LLM, a dashboard or more graph families would not resolve the missing contribution.
+- **Confirmed violation:** the request produces a protected effect that the policy forbids under the recorded conditions.
+- **Behavior consistent with policy:** the expected effect or denial is observed and the relevant controls succeed.
+- **Inconclusive:** authentication, service state, policy meaning or available evidence prevents classification.
 
-## Choice of research problem
+For a read, a synthetic private marker establishes which object was disclosed. For a write, an independent state read establishes whether the action occurred. Positive controls distinguish denial by policy from failure of the test apparatus. These conclusions apply to the recorded conditions and tested paths.
 
-Three directions were considered. General autonomous penetration testing is crowded and expensive to evaluate well. A new network attack planner would require a substantially richer state model and direct comparison with existing planning research. Stateful authorization testing offers a narrower problem that can be investigated with local VMs and independently observable outcomes.
+## Relation to graph reasoning
 
-The selected question concerns permission changes across existing sessions and application components. It is close to daily penetration-testing practice and permits controlled before-and-after experiments. It also has substantial prior art: RESTler already explores dependent request sequences; EvoMaster now has access-policy oracles and executable security tests; BolaZ examines object-level authorization boundaries. None of these capabilities can be claimed as new here.
+The repository’s graph model treats candidate transitions as available, unavailable or unresolved. Lower and upper graphs bound reachability using trusted validation records. This abstraction permits controlled study of how a validation policy resolves a query under incomplete evidence.
 
-The candidate contribution is a method for testing and explaining authorization failures across changes in policy, identity and cached state. Whether that distinction survives a full review remains open. If the nearest systems already cover it, the study should become a comparative measurement project or move to a different question before further implementation.
+Authorization transitions introduce additional state: session generation, policy version, object ownership and enforcement delay. A single Boolean edge does not encode all these conditions. The application study will therefore use explicit state and evidence dependencies rather than interpret synthetic graph reachability as a measurement of application authorization.
 
-## Work required before a thesis claim
+## Evaluation criteria
 
-First, reproduce a relevant access-policy baseline and document its limits on a small controlled experiment. Next, obtain locally reproducible application cases with independent policy specifications and vulnerable/fixed controls. Only then implement the proposed method and freeze a comparison protocol. Evidence of a useful difference must precede claims of novelty, generality or publication readiness.
+The primary comparison is between complete replay and selective revalidation after the same permission change. The evaluation will measure missed violations, false findings, inconclusive outcomes and total validation cost. Stateful API generation and access-policy testing provide additional comparisons, as discussed in [RELATED_WORK.md](RELATED_WORK.md).
 
-The immediate output is a research statement for technical review, not a completed dissertation. A thesis would require connected contributions over time: a defensible model of policy transitions, a testing method, and a rigorous empirical evaluation. The present repository establishes none of those results yet.
+A useful selection policy must reduce measured cost while maintaining detection on the declared test inventory. Evaluation by application family and policy implementation will distinguish repeated requests from independent evidence of generalization.

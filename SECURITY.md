@@ -1,7 +1,7 @@
 # Security reporting
 
-Use GitHub private vulnerability reporting if enabled for this repository. Otherwise, contact the maintainer through the contact information on the GitHub profile before sharing sensitive details. Do not disclose credentials, customer evidence, real target inventories, or personal data in public issues.
+Report vulnerabilities through GitHub private vulnerability reporting when enabled. Otherwise, use the maintainer’s GitHub profile contact information to arrange a private report before transmitting sensitive details.
 
-Include the affected version or commit, a minimal synthetic reproducer, expected and actual behavior, and the security impact. The current development branch is the maintained version. There is no guaranteed response-time SLA.
+A report should identify the affected commit, a minimal synthetic reproducer, expected and observed behavior, and security impact. The development branch is the maintained version. Response times depend on maintainer availability.
 
-These tools process local files. Run them with least privilege against copied, sanitized evidence; keep source registers and baselines trusted. Follow the specific trust boundaries documented in the README. Only assess systems for which you hold written authorization.
+The tools process local evidence files. Their trust boundary includes the validation-source policy, candidate graph and retained artifacts. File hashes support integrity checking; they do not authenticate an observation’s origin or establish its truth. Use copied, sanitized data and the minimum operating-system privileges required for processing. Application testing requires explicit authorization for the deployment and operations involved.

@@ -1,55 +1,47 @@
 # Testing authorization after policy changes
 
-Research proposal · 23 October 2026
+## Abstract
 
-## Problem
-
-Authorization is often tested as a static matrix: a principal requests a resource and the response is checked against the expected permission. In practice, permissions change while sessions, tokens, application caches and background work remain active. A request denied to a fresh session may still succeed through an older session. Conversely, a temporary failure or an expired session can be mistaken for successful enforcement.
-
-This study will investigate how to test authorization across such changes. The first scope is multi-user web applications and REST APIs deployed in a local virtual lab. Active Directory, endpoint exploitation and wireless assessment are outside the initial empirical claim.
-
-An illustrative case has four steps: establish that an authorized user can read a synthetic private record; revoke that permission through the supported administrative operation; repeat the request with the existing session; repeat it with a fresh session and an unaffected control user. The expected result depends on the application’s documented revocation contract. An eventual-consistency delay is not automatically a vulnerability.
+Permission changes can invalidate security observations while sessions, caches and background operations remain active. This research investigates how to generate and select authorization tests across these transitions. The proposed method associates observations with their policy and application-state dependencies, identifies evidence affected by a change and selects controls and probes for revalidation. Evaluation will compare static permission matrices, complete replay, stateful API testing and selective revalidation in isolated application deployments.
 
 ## Research questions
 
-1. Which permission-transition failures are missed by testing each identity against a single static snapshot?
-2. Can dependency-aware invalidation of earlier observations reduce retesting cost without missing failures after a policy change?
-3. Can a replayable test distinguish authorization failure from session expiry, missing data, infrastructure failure and allowed propagation delay?
-
-The second question is conditional. A dependency model must first be shown to capture the relevant effects of a policy change. Retesting only a guessed subset may miss exactly the failures the study seeks to find.
+1. Which permission-transition failures are missed by testing identities against a single static snapshot?
+2. How accurately can dependencies between policy changes and test observations be identified?
+3. Can selective revalidation reduce assessment cost while maintaining detection relative to complete replay?
+4. How reliably can replayable controls distinguish authorization failures from session expiry, unavailable resources, service failure and permitted propagation delay?
 
 ## Proposed method
 
-Represent a test as a sequence over principal, session, resource, policy version and observed application state. Each security conclusion records the conditions under which it was obtained. A permission change invalidates affected conclusions; a scheduler selects the next control or probe needed to re-establish them. The method produces the sequence, expected policy, observed effect and replay instructions for review.
+A test sequence records the principal, session generation, resource, action, policy version and relevant application state. Each conclusion is associated with the conditions under which it was observed. A permission change invalidates affected evidence; a scheduler selects the next control or probe needed to establish the resulting behavior.
 
-The result categories are confirmed violation, behavior consistent with the tested policy, and inconclusive. A successful response alone is insufficient to prove disclosure: a synthetic resource marker must demonstrate access to the protected object. A denied response alone is insufficient to prove enforcement: authentication validity and an authorized positive control must succeed. For writes, verify the actual state change through an independent permitted read or database fixture check.
+The output will include the request sequence, expected policy, observed effect, control results and replay instructions. Outcomes are confirmed violation, behavior consistent with the tested policy, or inconclusive. Reads require evidence of the protected object; writes require independent confirmation of the resulting state. Authentication validity and service availability are checked separately.
 
-The proposed contribution is the treatment of policy transitions and invalidated evidence in test generation and retest selection. Stateful requests, role switching, authorization matrices, provenance hashes and generated regression tests are established techniques. Novelty is unresolved until the closest systems have been examined and reproduced.
+The technical focus is the relationship between policy transitions, evidence validity and retest selection. Existing stateful testing and access-policy techniques provide the starting point and experimental comparisons; their relationship to this formulation is described in [RELATED_WORK.md](RELATED_WORK.md).
 
-## Relation to existing work
+## Scope
 
-RESTler supplies a strong reference for dependency-aware request sequences. EvoMaster’s 2026 access-policy work is a direct baseline for security oracles and generated tests. BolaZ is relevant to resource-ID flow and authorization boundaries. Enemy of the State and Black Widow establish substantial prior work on state-aware web exploration. The proposed study must identify a failure class these methods miss under a fair configuration, rather than compare only with a weak status-code checker. Sources and limits appear in [RELATED_WORK.md](RELATED_WORK.md).
+The application study will cover explicit revocation, role downgrade, tenant removal and resource ownership transfer in multi-user web applications and REST APIs. Test conditions will distinguish existing and fresh sessions, immediate and delayed enforcement, and direct and cached access paths.
 
-## Experimental scope
+Seeded faults will support harness verification and controlled sensitivity analysis. Historical open-source defects will support evaluation against application behavior. Each historical case will pair a pinned vulnerable version with its documented patch and a reproducible post-patch control. The two corpus groups will be analyzed separately.
 
-Begin with explicit revocation, role downgrade, tenant removal and resource ownership transfer. Compare existing and fresh sessions, immediate and delayed checks, and direct and cached access paths. Begin with fixed, deterministic application contracts before adding distributed components or timing uncertainty.
+Execution will use isolated local virtual machines and synthetic identities and records. Application families and policy implementations will define the development/evaluation split. Corpus size will be determined by reproduction feasibility and the precision required for the primary comparisons.
 
-Use deliberately seeded cases to test the apparatus and historical open-source defects to assess realism. Keep the two groups separate. Each historical case requires pinned source, its patch, a working pre-patch demonstration and a post-patch control. A training application is useful for development but does not establish generality.
+## Experimental comparisons
 
-All execution occurs in isolated local VMs with synthetic records. Application families, not individual requests, define the evaluation split. Measure whether the workstation can support each deployment before specifying corpus size. No customer environment, external scanning or human-subject experiment is needed for the first study.
+| Method | Role in the evaluation |
+|---|---|
+| Static role/resource matrix | Snapshot-based authorization coverage |
+| Complete replay after a change | Reference coverage within the declared inventory |
+| Stateful API test generation | Coverage from dependent request sequences |
+| Access-policy security checks | Detection through established authorization oracles |
+| Selective revalidation | Cost and detection under evidence dependency tracking |
+| Random selection at equal cost | Selection baseline without dependency information |
 
-## Expected outputs and decision gates
+Exact versions, supported operations, adapters, authentication setup and configuration effort will be recorded. Comparisons will use equivalent deployment states and reset conditions.
 
-| Stage | Output | Decision |
-|---|---|---|
-| Prior-work reproduction | Versioned comparison matrix and executable baseline run | Continue only if a specific unsupported task or measurement gap remains |
-| Corpus feasibility | A small set of reproducible policy-transition cases with independently specified expectations | Continue only if failures and controls replay reliably |
-| Method development | State/evidence model and prototype scheduler | Test on development families; record all changes |
-| Evaluation | Held-out comparisons, costs, errors, inconclusive outcomes and ablations | Retain negative results and explain exclusions |
-| External review | Research report and reproducibility package | Choose a submission venue only after the contribution is supported |
+## Research outputs
 
-A credible negative outcome is that full retesting is sufficiently cheap, dependency inference is unreliable, or an existing fuzzer already detects the same failures. In that case, report the measurement result and stop presenting the scheduler as an advance.
+The study will produce a model of policy transitions and evidence validity, a test-selection implementation, a reproducible application corpus and a comparative evaluation. The evaluation will include cases where dependency tracking misses relevant effects or where complete replay is equally economical. Protocol changes and exclusions will accompany the released results.
 
-## Current status
-
-This is a proposal. No policy-transition corpus, application adapter or new scheduler has been implemented. Existing graph code remains available as an earlier exploratory experiment. Its synthetic results do not answer the research questions above.
+Detailed outcome definitions and analysis appear in [PROTOCOL.md](PROTOCOL.md). Deployment and acquisition procedures appear in [LAB_PROTOCOL.md](LAB_PROTOCOL.md).
